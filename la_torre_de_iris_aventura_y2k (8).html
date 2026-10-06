@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Torre de Iris · Aventura Y2K</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, rgba(13, 40, 24, 0.85) 0%, rgba(28, 63, 39, 0.85) 50%, rgba(46, 90, 54, 0.85) 100%), 
+                        url('https://i.ibb.co/xP8qdT2/fondo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #111827;
+        }
+        h1, h2, h3, .y2k-title {
+            font-family: 'Syne', sans-serif;
+        }
+        .y2k-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(235, 247, 238, 0.95) 100%);
+            border: 3px solid #2e5a36;
+            box-shadow: 6px 6px 0px #FFE14D;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .y2k-button {
+            background: linear-gradient(135deg, #1c3f27 0%, #0d2818 100%);
+            color: #FFE14D;
+            border: 2px solid #FFE14D;
+            box-shadow: 4px 4px 0px #2e5a36;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .y2k-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #2e5a36;
+            background: linear-gradient(135deg, #2e5a36 0%, #1c3f27 100%);
+        }
+        .y2k-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #2e5a36;
+        }
+        .y2k-badge {
+            background-color: #FFE14D;
+            color: #0d2818;
+            border: 2px solid #1c3f27;
+            box-shadow: 2px 2px 0px #1c3f27;
+        }
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .fade-exit {
+            opacity: 1;
+        }
+        .fade-exit-active {
+            opacity: 0;
+            transform: translateY(-15px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#FFE14D] selection:text-[#0d2818]">
+
+    <header class="w-full border-b-4 border-[#1c3f27] bg-[#FFE14D] py-4 px-6 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">👑</span>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#0d2818] tracking-wider">LA TORRE DE IRIS</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button id="bgm-button" onclick="toggleBGM()" class="flex items-center space-x-2 bg-[#0d2818] text-[#FFE14D] border-2 border-[#1c3f27] px-3 py-1.5 rounded-lg font-bold text-xs md:text-sm hover:bg-[#1c3f27] transition-colors shadow-[2px_2px_0px_#1c3f27] cursor-pointer">
+                <span id="bgm-icon">🎵</span>
+                <span id="bgm-text">Música: OFF</span>
+            </button>
+            <div class="hidden md:flex items-center space-x-2 text-xs font-bold bg-[#1c3f27] text-[#FFE14D] px-3 py-1 rounded-full border-2 border-[#FFE14D]">
+                <span>🌲 BUSTE Y2K 🌲</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8">
+        <div id="game-container" class="w-full max-w-3xl">
+            
+            <!-- Pantalla de Inicio -->
+            <div id="screen-start" class="y2k-card p-6 md:p-10 rounded-2xl text-center space-y-6">
+                <div class="inline-block y2k-badge px-4 py-1 text-xs md:text-sm font-bold uppercase rounded-lg">
+                    Aventura Interactiva
+                </div>
+                <h2 class="text-3xl md:text-5xl font-extrabold text-[#0d2818] leading-tight">
+                    El Secreto de la Trenza Dorada
+                </h2>
+                <p class="text-sm md:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
+                    La princesa Iris vive encerrada en una altísima torre sin puertas. Una malvada hechicera le robó su magia. ¡Ayudá a Iris a tomar las mejores decisiones para cambiar su destino!
+                </p>
+                <div class="pt-4">
+                    <button onclick="startGame()" class="y2k-button text-lg md:text-xl px-8 py-4 rounded-xl uppercase tracking-wider cursor-pointer">
+                        🎮 COMENZAR AVENTURA
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pantalla de Escenas de Juego -->
+            <div id="screen-game" class="hidden y2k-card p-6 md:p-8 rounded-2xl space-y-6">
+                
+                <div class="flex flex-wrap justify-between items-center gap-3 border-b-2 border-[#1c3f27] pb-4">
+                    <div id="scene-badge" class="y2k-badge px-3 py-1 text-xs md:text-sm font-bold rounded-md uppercase">
+                        Escena: la princesa
+                    </div>
+                    <button id="tts-button" onclick="toggleSpeech()" class="flex items-center space-x-2 bg-white text-[#0d2818] border-2 border-[#1c3f27] px-4 py-1.5 rounded-lg font-bold text-xs md:text-sm hover:bg-[#FFE14D] transition-colors shadow-[2px_2px_0px_#1c3f27] cursor-pointer">
+                        <span id="tts-icon">🔊</span>
+                        <span id="tts-text">Escuchar texto</span>
+                    </button>
+                </div>
+
+                <!-- Recuadro para la imagen con object-fit: contain para mostrarla completa -->
+                <div id="scene-media-container" class="w-full aspect-video bg-[#091a10] border-3 border-[#1c3f27] rounded-xl flex flex-col items-center justify-center p-2 relative overflow-hidden shadow-inner">
+                    <!-- Contenido dinámico inyectado por JavaScript -->
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border-2 border-[#1c3f27]/30 shadow-sm">
+                    <p id="scene-description" class="text-base md:text-lg text-gray-800 leading-relaxed">
+                        Cargando historia...
+                    </p>
+                </div>
+
+                <div id="scene-options" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <!-- Botones generados dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Pantalla Final -->
+            <div id="screen-end" class="hidden y2k-card p-6 md:p-10 rounded-2xl text-center space-y-6">
+                <div class="inline-block y2k-badge px-4 py-1 text-xs md:text-sm font-bold uppercase rounded-lg">
+                    ✨ Final de la Historia ✨
+                </div>
+                <h2 id="end-title" class="text-3xl md:text-4xl font-extrabold text-[#0d2818] leading-tight">
+                    Título del Final
+                </h2>
+                <div class="bg-white p-6 rounded-xl border-2 border-[#1c3f27]/30 shadow-sm max-w-xl mx-auto">
+                    <p id="end-description" class="text-base md:text-lg text-gray-800 leading-relaxed">
+                        Descripción del final obtenido...
+                    </p>
+                </div>
+                <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="restartGame()" class="y2k-button text-base px-6 py-3 rounded-xl uppercase tracking-wider cursor-pointer">
+                        🔄 Jugar de nuevo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full border-t-2 border-[#1c3f27] bg-[#0d2818] py-3 px-6 text-center text-xs text-[#FFE14D] font-bold">
+        Desarrollado para aventureros de 10 a 14 años · Bosque Y2K ✨
+    </footer>
+
+    <script>
+        const scenes = {
+            1: {
+                id: 1,
+                name: "la princesa",
+                title: "Nace la princesa",
+                text: "La princesa Iris vivía sola en una torre de piedra muy alta que no tenía puertas ni escaleras. Una malvada hechicera la había encerrado allí cuando era bebé para robarle la magia de su voz.",
+                hasImage: true,
+                imageSrc: "https://i.ibb.co/gLxxJbhb/rapunzel.jpg",
+                imageInfo: "Imagen 1 · 1600×900",
+                altText: "Princesa Iris asomada a la torre alta con su larga trenza dorada",
+                options: [
+                    { text: "Es encerrada por la bruja", target: 2 },
+                    { text: "Sale corriendo", target: 3 }
+                ]
+            },
+            2: {
+                id: 2,
+                name: "princesa encerrada",
+                title: "Princesa encerrada",
+                text: "La princesa no puede salir de la torre. Los días pasan lentamente y el eco de su voz rebota en las frías paredes de piedra.",
+                hasImage: true,
+                imageSrc: "https://i.ibb.co/YB52KGHR/princesa-encerrada.jpg",
+                imageInfo: "Imagen 2 · 1600×900",
+                altText: "Iris atrapada en la torre oscura",
+                options: [
+                    { text: "Canta para ser escuchada por alguien", target: 4 },
+                    { text: "Se queda triste y sola", target: 5 }
+                ]
+            },
+            3: {
+                id: 3,
+                name: "el escape",
+                title: "El escape",
+                text: "¡Increíble! Con agilidad y valentía, la princesa logra encontrar una rendija y escapar antes de que la bruja regrese.",
+                hasImage: true,
+                imageSrc: "https://i.ibb.co/BVNv8nbd/escapar.jpg",
+                imageInfo: "Imagen 3 · 1600×900",
+                altText: "Iris escapando por los alrededores de la torre",
+                options: [
+                    { text: "Canta para ser escuchada por alguien", target: 4 },
+                    { text: "Se queda triste y sola", target: 5 }
+                ]
+            },
+            4: {
+                id: 4,
+                name: "musica",
+                title: "Música en el bosque",
+                text: "Se pone a cantar la princesa con tanta dulzura que su voz atraviesa las copas de los árboles y la escucha un apuesto príncipe.",
+                hasImage: true,
+                imageSrc: "https://i.ibb.co/NgFjmvCJ/musica.jpg",
+                imageInfo: "Imagen 4 · 1600×900",
+                altText: "El príncipe escuchando el canto de Iris",
+                options: [
+                    { text: "Son felices por siempre con el príncipe", target: "final-1" },
+                    { text: "El príncipe la ignora y ella queda perdida en el bosque", target: "final-2" }
+                ]
+            },
+            5: {
+                id: 5,
+                name: "En el bosque",
+                title: "En el bosque profundo",
+                text: "Rodeada de sombras y árboles gigantescos, se pone a cantar la princesa con esperanza y es escuchada por un príncipe que pasaba por allí.",
+                hasImage: true,
+                imageSrc: "https://i.ibb.co/p6pdNCm2/en-el-bosque.jpg",
+                imageInfo: "Imagen 5 · 1600×900",
+                altText: "Iris cantando en medio del bosque",
+                options: [
+                    { text: "Son felices por siempre con el príncipe", target: "final-1" },
+                    { text: "El príncipe la ignora y ella queda perdida en el bosque", target: "final-2" }
+                ]
+            }
+        };
+
+        const finals = {
+            "final-1": {
+                name: "final 1",
+                title: "¡Final Feliz!",
+                text: "Son felices por siempre con el príncipe. Cortaron un trozo de la cabellera, la ataron fuerte a la ventana y huyeron para siempre hacia el reino cantando de alegría.",
+                imageInfo: "Imagen Final 1 · 1600×900"
+            },
+            "final-2": {
+                name: "final 2",
+                title: "Final Misterioso",
+                text: "El príncipe la ignora y ella queda perdida en el bosque. Sin embargo, descubre que su propia voz tiene tanta fuerza que construirá su propio destino.",
+                imageInfo: "Imagen Final 2 · 1600×900"
+            }
+        };
+
+        let currentSceneId = 1;
+        let isSpeaking = false;
+        let synth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        // BGM Web Audio generator
+        let audioCtx = null;
+        let isBgmPlaying = false;
+        let bgmInterval = null;
+
+        function toggleBGM() {
+            if (isBgmPlaying) {
+                stopBGM();
+            } else {
+                startBGM();
+            }
+        }
+
+        function startBGM() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isBgmPlaying = true;
+            updateBGMUI(true);
+            playTangledMelodyLoop();
+        }
+
+        function stopBGM() {
+            isBgmPlaying = false;
+            if (bgmInterval) {
+                clearTimeout(bgmInterval);
+                bgmInterval = null;
+            }
+            updateBGMUI(false);
+        }
+
+        function updateBGMUI(playing) {
+            const icon = document.getElementById('bgm-icon');
+            const text = document.getElementById('bgm-text');
+            const btn = document.getElementById('bgm-button');
+            if (playing) {
+                icon.innerText = "🎶";
+                text.innerText = "Música: ON";
+                btn.classList.add('bg-[#FFE14D]', 'text-[#0d2818]');
+                btn.classList.remove('bg-[#0d2818]', 'text-[#FFE14D]');
+            } else {
+                icon.innerText = "🎵";
+                text.innerText = "Música: OFF";
+                btn.classList.remove('bg-[#FFE14D]', 'text-[#0d2818]');
+                btn.classList.add('bg-[#0d2818]', 'text-[#FFE14D]');
+            }
+        }
+
+        function playTangledMelodyLoop() {
+            if (!isBgmPlaying) return;
+
+            const notes = [
+                261.63, 293.66, 329.63, 392.00, 440.00, 
+                523.25, 587.33, 659.25, 783.99, 523.25, 392.00, 329.63
+            ];
+
+            function playNextNote() {
+                if (!isBgmPlaying) return;
+
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.value = notes[Math.floor(Math.random() * notes.length)];
+
+                    const now = audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.02, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 1.5);
+                } catch(e) {
+                    console.error(e);
+                }
+
+                bgmInterval = setTimeout(playNextNote, 800 + Math.random() * 400);
+            }
+
+            playNextNote();
+        }
+
+        function switchScreen(hideId, showId) {
+            stopSpeech();
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            
+            hideEl.classList.add('fade-exit', 'fade-exit-active');
+            setTimeout(() => {
+                hideEl.classList.add('hidden');
+                hideEl.classList.remove('fade-exit', 'fade-exit-active');
+                
+                showEl.classList.remove('hidden');
+                showEl.classList.add('fade-enter');
+                setTimeout(() => {
+                    showEl.classList.add('fade-enter-active');
+                    showEl.classList.remove('fade-enter');
+                }, 20);
+            }, 300);
+        }
+
+        function startGame() {
+            if (!isBgmPlaying) {
+                startBGM();
+            }
+            switchScreen('screen-start', 'screen-game');
+            loadScene(1);
+        }
+
+        function restartGame() {
+            switchScreen('screen-end', 'screen-start');
+        }
+
+        function loadScene(id) {
+            stopSpeech();
+            currentSceneId = id;
+            const scene = scenes[id];
+
+            document.getElementById('scene-badge').innerText = `Escena: ${scene.name}`;
+            document.getElementById('scene-description').innerText = scene.text;
+
+            const mediaContainer = document.getElementById('scene-media-container');
+            mediaContainer.innerHTML = '';
+
+            if (scene.hasImage) {
+                const img = document.createElement('img');
+                img.src = scene.imageSrc;
+                img.alt = scene.altText;
+                // Usamos object-fit: contain para que la imagen se vea completa
+                img.className = "w-full h-full object-contain rounded-lg";
+                img.onerror = function() {
+                    mediaContainer.innerHTML = `
+                        <div class="absolute inset-0 bg-[#1c3f27]/10 flex items-center justify-center p-4 text-center">
+                            <span class="text-xs md:text-sm font-bold text-[#FFE14D] bg-[#0d2818]/90 px-4 py-2 rounded-lg border-2 border-[#1c3f27] shadow-md">
+                                ${scene.imageInfo} (Cargando enlace alternativo...)
+                            </span>
+                        </div>
+                    `;
+                };
+                mediaContainer.appendChild(img);
+            } else {
+                mediaContainer.innerHTML = `
+                    <div class="absolute inset-0 bg-[#1c3f27]/10 flex items-center justify-center">
+                        <span class="text-xs md:text-sm font-bold text-[#FFE14D] bg-[#0d2818]/90 px-4 py-2 rounded-lg border-2 border-[#1c3f27] shadow-md">
+                            ${scene.imageInfo}
+                        </span>
+                    </div>
+                `;
+            }
+
+            const optionsContainer = document.getElementById('scene-options');
+            optionsContainer.innerHTML = '';
+
+            scene.options.forEach(opt => {
+                const button = document.createElement('button');
+                button.className = "y2k-button p-4 rounded-xl text-left text-sm md:text-base flex justify-between items-center cursor-pointer";
+                button.innerHTML = `<span>${opt.text}</span> <span class="text-xl">👉</span>`;
+                button.onclick = () => {
+                    stopSpeech();
+                    if (typeof opt.target === 'string' && opt.target.startsWith('final')) {
+                        loadFinal(opt.target);
+                    } else {
+                        loadScene(opt.target);
+                    }
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function loadFinal(finalKey) {
+            stopSpeech();
+            const finalData = finals[finalKey];
+            document.getElementById('end-title').innerText = finalData.title;
+            document.getElementById('end-description').innerText = finalData.text;
+            switchScreen('screen-game', 'screen-end');
+        }
+
+        function toggleSpeech() {
+            if (!('speechSynthesis' in window)) {
+                return;
+            }
+
+            if (isSpeaking) {
+                stopSpeech();
+            } else {
+                startSpeech();
+            }
+        }
+
+        function startSpeech() {
+            let textToRead = "";
+            const gameScreen = document.getElementById('screen-game');
+            const endScreen = document.getElementById('screen-end');
+
+            if (!gameScreen.classList.contains('hidden')) {
+                const scene = scenes[currentSceneId];
+                textToRead = `${scene.title}. ${scene.text}`;
+            } else if (!endScreen.classList.contains('hidden')) {
+                const title = document.getElementById('end-title').innerText;
+                const desc = document.getElementById('end-description').innerText;
+                textToRead = `${title}. ${desc}`;
+            }
+
+            if (!textToRead) return;
+
+            currentUtterance = new SpeechSynthesisUtterance(textToRead);
+            currentUtterance.lang = 'es-ES';
+            currentUtterance.rate = 1.0;
+
+            currentUtterance.onend = function() {
+                resetSpeechUI();
+            };
+
+            currentUtterance.onerror = function() {
+                resetSpeechUI();
+            };
+
+            synth.speak(currentUtterance);
+            isSpeaking = true;
+            updateSpeechUI(true);
+        }
+
+        function stopSpeech() {
+            if (synth) {
+                synth.cancel();
+            }
+            resetSpeechUI();
+        }
+
+        function updateSpeechUI(speaking) {
+            isSpeaking = speaking;
+            const icon = document.getElementById('tts-icon');
+            const text = document.getElementById('tts-text');
+            const btn = document.getElementById('tts-button');
+            if (speaking) {
+                icon.innerText = "🔇";
+                text.innerText = "Detener voz";
+                btn.classList.add('bg-[#FFE14D]');
+            } else {
+                icon.innerText = "🔊";
+                text.innerText = "Escuchar texto";
+                btn.classList.remove('bg-[#FFE14D]');
+            }
+        }
+
+        function resetSpeechUI() {
+            isSpeaking = false;
+            updateSpeechUI(false);
+        }
+    </script>
+</body>
+</html>
